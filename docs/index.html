@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kalkron — Android 向け電卓アプリ</title>
+<meta name="description" content="黒曜石とネオンの計器のような Android 向けの電卓アプリ。四則演算と計算履歴。Android 8.0 以降。">
+<meta property="og:title" content="Kalkron">
+<meta property="og:description" content="黒曜石とネオンの計器のような Android 向けの電卓アプリ。">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=Geist:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --canvas:#050608; --surface:#121316; --panel:#0a0d12; --keycap:#12161f;
+    --cyan:#00f0ff; --cyan-bright:#dbfcff; --cyan-deep:#00363a;
+    --amber:#ffb300; --text:#e3e2e6; --muted:#64748b; --digit:#e2e8f0;
+    --hairline:rgba(255,255,255,.08); --hairline-top:rgba(255,255,255,.16);
+    --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+    --head:"Space Grotesk",system-ui,sans-serif;
+    --body:"Geist",system-ui,-apple-system,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--surface);color:var(--text);font-family:var(--body);
+       line-height:1.7;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:760px;margin:0 auto;padding:0 20px}
+  a{color:var(--cyan)}
+
+  header{padding:56px 0 40px;border-bottom:1px solid var(--hairline)}
+  .brand{display:flex;align-items:center;gap:12px;margin-bottom:28px}
+  .logo{width:34px;height:34px;border-radius:4px;background:var(--cyan);color:var(--cyan-deep);
+        display:grid;place-items:center;font-family:var(--head);font-weight:700;font-size:20px}
+  .sys{font-family:var(--mono);font-size:14px;letter-spacing:.06em}
+  .mode{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--muted)}
+  h1{font-family:var(--head);font-weight:600;font-size:clamp(34px,7vw,52px);
+     letter-spacing:-.02em;line-height:1.15;margin:0 0 14px}
+  .tagline{color:var(--text);font-size:17px;margin:0 0 8px}
+  .sub{color:var(--muted);font-size:15px;margin:0 0 30px}
+
+  .cta{display:inline-flex;align-items:center;gap:10px;background:var(--cyan);color:var(--cyan-deep);
+       text-decoration:none;font-family:var(--mono);font-weight:600;font-size:15px;letter-spacing:.04em;
+       padding:14px 26px;border-radius:4px;box-shadow:0 0 24px rgba(0,240,255,.25)}
+  .cta:hover{box-shadow:0 0 32px rgba(0,240,255,.45)}
+  .req{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--muted);margin-top:14px}
+
+  section{padding:40px 0;border-bottom:1px solid var(--hairline)}
+  h2{font-family:var(--head);font-weight:600;font-size:22px;letter-spacing:-.01em;margin:0 0 18px}
+  ul{margin:0;padding-left:1.1em}
+  li{margin:6px 0}
+  code,.k{font-family:var(--mono);font-size:.92em}
+  code{background:var(--keycap);border:1px solid var(--hairline);border-radius:3px;padding:1px 5px}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+  .card{background:var(--panel);border:1px solid var(--hairline);
+        border-top-color:var(--hairline-top);border-radius:8px;padding:16px 18px}
+  .card .t{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--cyan);margin-bottom:6px}
+  .card .d{font-size:14px;color:var(--text)}
+
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{text-align:left;padding:9px 0;border-bottom:1px solid var(--hairline);vertical-align:top}
+  th{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--muted);font-weight:500;width:42%}
+  td{font-family:var(--mono);font-size:13px;color:var(--digit)}
+
+  .hash{background:var(--panel);border:1px solid var(--hairline);border-radius:8px;padding:14px 16px;
+        font-family:var(--mono);font-size:12px;color:var(--muted);overflow-x:auto;white-space:nowrap}
+  .hash b{color:var(--cyan);font-weight:500}
+
+  .note{background:var(--panel);border:1px solid var(--hairline);border-left:2px solid var(--amber);
+        border-radius:4px;padding:14px 16px;font-size:14px;color:var(--text)}
+
+  footer{padding:32px 0 56px;color:var(--muted);font-size:13px}
+  footer a{color:var(--muted);text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="brand">
+      <div class="logo">=</div>
+      <div>
+        <div class="sys">KALKRON.SYS</div>
+        <div class="mode">STANDARD MODE</div>
+      </div>
+    </div>
+    <h1>Kalkron</h1>
+    <p class="tagline">黒曜石とネオンの計器のような、Android 向けの電卓アプリ。</p>
+    <p class="sub">四則演算と、計算履歴の保存・閲覧。計算は <code>BigDecimal</code> で行うため、
+      <span class="k">0.1 + 0.2</span> が <span class="k">0.30000000000000004</span> になるような誤差が出ません。</p>
+    <a class="cta" href="https://github.com/morststs/kalkron/releases/latest">APK をダウンロード</a>
+    <div class="req">ANDROID 8.0（API 26）以降 / 13.3 MB</div>
+  </header>
+
+  <section>
+    <h2>機能</h2>
+    <div class="grid">
+      <div class="card"><div class="t">CALCULATE</div><div class="d">四則演算、<span class="k">%</span>、符号反転、小数点、<span class="k">AC</span> / <span class="k">DEL</span>、連続計算</div></div>
+      <div class="card"><div class="t">HISTORY</div><div class="d">計算履歴をローカル DB に保存し、一覧表示と全件削除</div></div>
+      <div class="card"><div class="t">PRECISION</div><div class="d">12 桁まで入力、有効桁数 12 桁で丸め（HALF_UP）</div></div>
+      <div class="card"><div class="t">LAYOUT</div><div class="d">縦向き・横向きに対応。ダークテーマ固定</div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>インストール</h2>
+    <p>Google Play を経由しないため、端末側で「提供元不明のアプリ」の許可が必要です。</p>
+    <ul>
+      <li><span class="k">kalkron-v1.0.apk</span> をダウンロード</li>
+      <li>ファイルを開き、表示に従ってインストール</li>
+    </ul>
+    <p class="note">個人の鍵による自己署名です。証明書の SHA-256 は
+      <span class="k">3b08f406…39e0ff0c</span>。APK のハッシュは
+      <a href="https://github.com/morststs/kalkron/releases/tag/v1.0">リリースページ</a>に記載しています。</p>
+  </section>
+
+  <section>
+    <h2>技術構成</h2>
+    <table>
+      <tr><th>言語 / UI</th><td>Kotlin / Jetpack Compose（Material3）</td></tr>
+      <tr><th>構成</th><td>MVVM + Repository</td></tr>
+      <tr><th>永続化</th><td>Room</td></tr>
+      <tr><th>画面遷移</th><td>Navigation Compose（型安全ルート）</td></tr>
+      <tr><th>applicationId</th><td>click.e17.kalkron</td></tr>
+      <tr><th>compileSdk / minSdk</th><td>37 / 26</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2>デザイン</h2>
+    <p>UI は <a href="https://stitch.withgoogle.com/">Google Stitch</a> で作成したデザインシステム
+      <em>Obsidian Cyber-Precision</em> に基づいています。黒曜石の地に、演算を表すエレクトリックシアンと、
+      消去系のアンバー。影を落とさず、上辺が明るい 1px のヘアライン枠で立体感を出しています。</p>
+    <div class="hash"><b>#121316</b> surface &nbsp;·&nbsp; <b>#00F0FF</b> cyan &nbsp;·&nbsp; <b>#FFB300</b> amber &nbsp;·&nbsp; JetBrains Mono / Space Grotesk / Geist</div>
+  </section>
+
+  <footer>
+    <p><a href="https://github.com/morststs/kalkron">ソースコード（GitHub）</a></p>
+    <p>同梱フォント（JetBrains Mono / Space Grotesk / Geist）は SIL Open Font License 1.1 です。</p>
+  </footer>
+
+</div>
+</body>
+</html>
