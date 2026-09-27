@@ -11,7 +11,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import click.e17.kalkron.ui.navigation.CalculatorApp
 import click.e17.kalkron.ui.theme.CalculatorTheme
-import click.e17.kalkron.ui.theme.ObsidianSurface
+import click.e17.kalkron.ui.theme.ObsidianCanvas
 
 /**
  * アプリで唯一の Activity。
@@ -34,7 +34,7 @@ class MainActivity : ComponentActivity() {
             CalculatorTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = ObsidianSurface,
+                    color = ObsidianCanvas,
                 ) {
                     CalculatorApp()
                 }

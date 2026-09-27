@@ -6,8 +6,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Backspace
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import click.e17.kalkron.domain.CalculatorAction
 import click.e17.kalkron.domain.Operator
@@ -22,6 +25,8 @@ private data class KeySpec(
     val action: CalculatorAction,
     val style: CalculatorButtonStyle,
     val span: Float = 1f,
+    /** 文字の代わりにアイコンを出すキー（DEL の ⌫ など） */
+    val icon: ImageVector? = null,
 )
 
 /**
@@ -33,7 +38,12 @@ private val KEYPAD: List<List<KeySpec>> = listOf(
         KeySpec("AC", CalculatorAction.Clear, CalculatorButtonStyle.Function),
         KeySpec("+/-", CalculatorAction.ToggleSign, CalculatorButtonStyle.Number),
         KeySpec("%", CalculatorAction.Percent, CalculatorButtonStyle.Number),
-        KeySpec("DEL", CalculatorAction.Delete, CalculatorButtonStyle.Function),
+        KeySpec(
+            label = "DEL",
+            action = CalculatorAction.Delete,
+            style = CalculatorButtonStyle.Function,
+            icon = Icons.AutoMirrored.Filled.Backspace,
+        ),
     ),
     listOf(
         KeySpec("7", CalculatorAction.Digit(7), CalculatorButtonStyle.Number),
@@ -79,11 +89,12 @@ fun CalculatorKeypad(
         // Stitch の指定どおり、キー同士の間隔は詰める（8px）
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        KEYPAD.forEach { row ->
+        KEYPAD.forEachIndexed { index, row ->
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f),
+                    // = の行だけ少し低くして、ほかのキーより主張しすぎないようにする
+                    .weight(if (index == KEYPAD.lastIndex) 0.8f else 1f),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 row.forEach { key ->
@@ -91,6 +102,7 @@ fun CalculatorKeypad(
                         label = key.label,
                         onClick = { onAction(key.action) },
                         style = key.style,
+                        icon = key.icon,
                         modifier = Modifier
                             .weight(key.span)
                             .fillMaxHeight(),

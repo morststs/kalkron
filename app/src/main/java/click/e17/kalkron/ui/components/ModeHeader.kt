@@ -7,13 +7,18 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Terminal
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import click.e17.kalkron.ui.theme.CyanDeep
 import click.e17.kalkron.ui.theme.ElectricCyan
 import click.e17.kalkron.ui.theme.MetaText
@@ -44,17 +49,18 @@ fun ModeHeader(
                 .background(ElectricCyan),
             contentAlignment = Alignment.Center,
         ) {
-            Text(
-                text = "=",
-                style = MaterialTheme.typography.headlineMedium,
-                color = CyanDeep,
+            Icon(
+                imageVector = Icons.Default.Terminal,
+                contentDescription = null,
+                tint = CyanDeep,
+                modifier = Modifier.size(19.dp),
             )
         }
 
         Column {
             Text(
                 text = "KALKRON.SYS",
-                style = MaterialTheme.typography.labelLarge,
+                style = MaterialTheme.typography.labelLarge.copy(fontSize = 15.sp),
                 color = OnSurfaceBright,
             )
             Text(
@@ -79,9 +85,16 @@ fun TelemetryStrip(
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        // 先頭の小さなランプ（デザイン画の帯の頭にある点）
+        Box(
+            modifier = Modifier
+                .size(5.dp)
+                .clip(CircleShape)
+                .background(ElectricCyan)
+        )
         items.forEach { (label, value) ->
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(

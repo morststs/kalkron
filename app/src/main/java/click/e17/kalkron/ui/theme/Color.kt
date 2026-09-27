@@ -26,6 +26,8 @@ val PanelGlass = Color(0xFF0A0D12)
 /** キーキャップの地 */
 val KeycapBase = Color(0xFF12161F)
 val KeycapHover = Color(0xFF1A202C)
+/** キーキャップ左上の小さな刻印の点 */
+val KeycapMarker = Color(0xFF3B4252)
 
 // --- アクセント ---
 /** 演算・実行を表すエレクトリックシアン。このデザインの主役 */

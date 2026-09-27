@@ -1,6 +1,8 @@
 package click.e17.kalkron.ui.calculator
 
 import click.e17.kalkron.domain.CalculatorState
+import click.e17.kalkron.ui.format.groupDigits
+import click.e17.kalkron.ui.format.groupExpression
 
 /**
  * 電卓画面が表示に必要とする情報だけを持つ状態クラス。
@@ -21,10 +23,13 @@ data class CalculatorUiState(
     val digitCount: Int = 1,
 )
 
-/** ドメインの状態 → 画面用の状態への変換 */
+/**
+ * ドメインの状態 → 画面用の状態への変換。
+ * ここで 3 桁区切りを入れる（ドメイン側の文字列はカンマ無しのまま保つ）。
+ */
 fun CalculatorState.toUiState(): CalculatorUiState = CalculatorUiState(
-    display = input,
-    expression = expression,
+    display = groupDigits(input),
+    expression = groupExpression(expression),
     isError = isError,
     pendingOperator = pendingOperator?.symbol,
     digitCount = if (isError) 0 else input.count { it.isDigit() },

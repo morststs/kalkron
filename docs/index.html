@@ -30,7 +30,7 @@
   header{padding:56px 0 40px;border-bottom:1px solid var(--hairline)}
   .brand{display:flex;align-items:center;gap:12px;margin-bottom:28px}
   .logo{width:34px;height:34px;border-radius:4px;background:var(--cyan);color:var(--cyan-deep);
-        display:grid;place-items:center;font-family:var(--head);font-weight:700;font-size:20px}
+        display:grid;place-items:center;font-family:var(--mono);font-weight:600;font-size:14px}
   .sys{font-family:var(--mono);font-size:14px;letter-spacing:.06em}
   .mode{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--muted)}
   h1{font-family:var(--head);font-weight:600;font-size:clamp(34px,7vw,52px);
@@ -78,7 +78,7 @@
 
   <header>
     <div class="brand">
-      <div class="logo">=</div>
+      <div class="logo">&gt;_</div>
       <div>
         <div class="sys">KALKRON.SYS</div>
         <div class="mode">STANDARD MODE</div>
@@ -89,7 +89,7 @@
     <p class="sub">四則演算と、計算履歴の保存・閲覧。計算は <code>BigDecimal</code> で行うため、
       <span class="k">0.1 + 0.2</span> が <span class="k">0.30000000000000004</span> になるような誤差が出ません。</p>
     <a class="cta" href="https://github.com/morststs/kalkron/releases/latest">APK をダウンロード</a>
-    <div class="req">ANDROID 8.0（API 26）以降 / 13.3 MB</div>
+    <div class="req">ANDROID 8.0（API 26）以降 / 12.7 MB</div>
   </header>
 
   <section>
@@ -97,7 +97,7 @@
     <div class="grid">
       <div class="card"><div class="t">CALCULATE</div><div class="d">四則演算、<span class="k">%</span>、符号反転、小数点、<span class="k">AC</span> / <span class="k">DEL</span>、連続計算</div></div>
       <div class="card"><div class="t">HISTORY</div><div class="d">計算履歴をローカル DB に保存し、一覧表示と全件削除</div></div>
-      <div class="card"><div class="t">PRECISION</div><div class="d">12 桁まで入力、有効桁数 12 桁で丸め（HALF_UP）</div></div>
+      <div class="card"><div class="t">PRECISION</div><div class="d">12 桁まで入力、有効桁数 12 桁で丸め（HALF_UP）。3 桁区切りで表示</div></div>
       <div class="card"><div class="t">LAYOUT</div><div class="d">縦向き・横向きに対応。ダークテーマ固定</div></div>
     </div>
   </section>
@@ -106,12 +106,12 @@
     <h2>インストール</h2>
     <p>Google Play を経由しないため、端末側で「提供元不明のアプリ」の許可が必要です。</p>
     <ul>
-      <li><span class="k">kalkron-v1.0.apk</span> をダウンロード</li>
+      <li><a href="https://github.com/morststs/kalkron/releases/latest">リリースページ</a>から最新の APK をダウンロード</li>
       <li>ファイルを開き、表示に従ってインストール</li>
     </ul>
     <p class="note">個人の鍵による自己署名です。証明書の SHA-256 は
       <span class="k">3b08f406…39e0ff0c</span>。APK のハッシュは
-      <a href="https://github.com/morststs/kalkron/releases/tag/v1.0">リリースページ</a>に記載しています。</p>
+      <a href="https://github.com/morststs/kalkron/releases/latest">リリースページ</a>に記載しています。</p>
   </section>
 
   <section>

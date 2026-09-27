@@ -35,6 +35,8 @@ import click.e17.kalkron.R
 import click.e17.kalkron.domain.CalculationRecord
 import click.e17.kalkron.ui.AppViewModelProvider
 import click.e17.kalkron.ui.components.GlassPanel
+import click.e17.kalkron.ui.format.groupDigits
+import click.e17.kalkron.ui.format.groupExpression
 import click.e17.kalkron.ui.components.ModeHeader
 import click.e17.kalkron.ui.components.TelemetryStrip
 import click.e17.kalkron.ui.theme.AmberTelemetry
@@ -173,7 +175,7 @@ private fun HistoryItem(
                 }
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = record.expression,
+                    text = groupExpression(record.expression),
                     style = MaterialTheme.typography.labelMedium,
                     color = MetaText,
                     modifier = Modifier.fillMaxWidth(),
@@ -181,7 +183,7 @@ private fun HistoryItem(
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = "= ${record.result}",
+                    text = "= ${groupDigits(record.result)}",
                     style = MaterialTheme.typography.headlineSmall,
                     color = CyanBright,
                     modifier = Modifier.fillMaxWidth(),

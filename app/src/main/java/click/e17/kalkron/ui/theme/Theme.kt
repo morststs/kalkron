@@ -27,10 +27,11 @@ private val ObsidianColorScheme = darkColorScheme(
     tertiaryContainer = VioletContainer,
     onTertiaryContainer = IonViolet,
 
-    background = ObsidianSurface,
+    // 地をキーより暗くしないとキーが沈んで見えるため、canvas を使う
+    background = ObsidianCanvas,
     onBackground = OnSurfaceBright,
 
-    surface = ObsidianSurface,
+    surface = ObsidianCanvas,
     onSurface = OnSurfaceBright,
     surfaceVariant = ObsidianSurfaceHighest,
     onSurfaceVariant = OnSurfaceMuted,

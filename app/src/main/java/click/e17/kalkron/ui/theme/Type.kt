@@ -52,16 +52,16 @@ val Typography = Typography(
     displayLarge = TextStyle(
         fontFamily = JetBrainsMono,
         fontWeight = FontWeight(500),
-        fontSize = 56.sp,
-        lineHeight = 64.sp,
+        fontSize = 44.sp,
+        lineHeight = 52.sp,
         letterSpacing = (-0.04).em,
     ),
     // display-lg-mobile: 画面が狭いときの数字
     displayMedium = TextStyle(
         fontFamily = JetBrainsMono,
         fontWeight = FontWeight(500),
-        fontSize = 36.sp,
-        lineHeight = 44.sp,
+        fontSize = 30.sp,
+        lineHeight = 38.sp,
         letterSpacing = (-0.03).em,
     ),
     // headline-lg / headline-md: 画面タイトル

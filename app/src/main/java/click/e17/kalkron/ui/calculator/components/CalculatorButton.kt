@@ -5,6 +5,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -14,10 +18,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import click.e17.kalkron.ui.components.hairlineBorder
-import click.e17.kalkron.ui.theme.AmberTelemetry
 import click.e17.kalkron.ui.theme.CyanDeep
 import click.e17.kalkron.ui.theme.CyanPressFill
 import click.e17.kalkron.ui.theme.DigitText
@@ -26,18 +31,20 @@ import click.e17.kalkron.ui.theme.HairlineActive
 import click.e17.kalkron.ui.theme.HairlineBottom
 import click.e17.kalkron.ui.theme.HairlineTop
 import click.e17.kalkron.ui.theme.KeycapBase
+import click.e17.kalkron.ui.theme.KeycapHover
+import click.e17.kalkron.ui.theme.KeycapMarker
 
 /**
- * キーの役割ごとの見た目。Stitch の "Action Tiers" に対応する。
+ * キーの役割ごとの見た目。
  */
 enum class CalculatorButtonStyle {
-    /** 0〜9, . : 淡いグレーの文字 */
+    /** 0〜9, . : 大きめの数字 */
     Number,
 
-    /** AC, DEL, %, +/- : アンバー。補助的・破壊的な操作 */
+    /** AC, DEL, %, +/- : 小さめの文字またはアイコン */
     Function,
 
-    /** + - × ÷ : エレクトリックシアン */
+    /** + - × ÷ : シアン。地を一段明るくして列として目立たせる */
     Operator,
 
     /** = : シアンで塗り潰し、常時うっすら発光させる */
@@ -47,10 +54,7 @@ enum class CalculatorButtonStyle {
 /**
  * 電卓のキー 1 つ分（キーキャップ）。
  *
- * Stitch の指定に沿って次の状態を再現している。
- *  - 通常時: 暗いガラスの地に、上辺が明るいヘアライン枠
- *  - 押下時: 内側がシアンで満たされ、枠が発光する（潰れる動きはあえて付けない）
- *  - `=` のみ: 常にシアンで塗られ、外側に光がにじむ
+ * [label] か [icon] のどちらかを表示する。
  */
 @Composable
 fun CalculatorButton(
@@ -58,21 +62,25 @@ fun CalculatorButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     style: CalculatorButtonStyle = CalculatorButtonStyle.Number,
+    icon: ImageVector? = null,
 ) {
-    val shape = MaterialTheme.shapes.small
+    // キーの角丸はデザイン画に合わせて 8dp（パネルと同じ large）
+    val shape = MaterialTheme.shapes.large
     val interactionSource = remember { MutableInteractionSource() }
     val pressed by interactionSource.collectIsPressedAsState()
 
     val isAccent = style == CalculatorButtonStyle.Accent
     val contentColor = when (style) {
-        CalculatorButtonStyle.Number -> DigitText
-        CalculatorButtonStyle.Function -> AmberTelemetry
+        // AC・DEL なども白系にする（アンバーはエラー表示と履歴削除のみに使う）
+        CalculatorButtonStyle.Number, CalculatorButtonStyle.Function -> DigitText
         CalculatorButtonStyle.Operator -> ElectricCyan
         CalculatorButtonStyle.Accent -> CyanDeep
     }
     val containerColor = when {
         isAccent -> ElectricCyan
         pressed -> CyanPressFill
+        // 演算子の列だけ地を明るくして、数字と見分けやすくする
+        style == CalculatorButtonStyle.Operator -> KeycapHover
         else -> KeycapBase
     }
 
@@ -91,7 +99,6 @@ fun CalculatorButton(
                 if (isAccent) {
                     Modifier
                 } else {
-                    // 押している間だけ枠をシアンに切り替える
                     Modifier.hairlineBorder(
                         shape = shape,
                         top = if (pressed) HairlineActive else HairlineTop,
@@ -107,14 +114,42 @@ fun CalculatorButton(
             ),
         contentAlignment = Alignment.Center,
     ) {
-        Text(
-            text = label,
-            style = if (isAccent) {
-                MaterialTheme.typography.headlineMedium
-            } else {
-                MaterialTheme.typography.labelLarge
-            },
-            color = contentColor,
-        )
+        // 数字キーの左上に置く小さな点（デザイン画にあるキーキャップの刻印）
+        if (style == CalculatorButtonStyle.Number) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(start = 7.dp, top = 7.dp)
+                    .size(3.dp)
+                    .clip(CircleShape)
+                    .background(KeycapMarker)
+            )
+        }
+
+        if (icon != null) {
+            Icon(
+                imageVector = icon,
+                contentDescription = label,
+                tint = contentColor,
+                modifier = Modifier.size(24.dp),
+            )
+        } else {
+            Text(
+                text = label,
+                // 役割ごとに文字の大きさを変える。数字と演算子はしっかり大きく取る
+                style = when (style) {
+                    CalculatorButtonStyle.Number ->
+                        MaterialTheme.typography.labelLarge.copy(fontSize = 22.sp)
+
+                    // ÷ や − は字面が小さく見えるため、数字より大きめに取る
+                    CalculatorButtonStyle.Operator, CalculatorButtonStyle.Accent ->
+                        MaterialTheme.typography.labelLarge.copy(fontSize = 32.sp)
+
+                    CalculatorButtonStyle.Function ->
+                        MaterialTheme.typography.labelLarge
+                },
+                color = contentColor,
+            )
+        }
     }
 }

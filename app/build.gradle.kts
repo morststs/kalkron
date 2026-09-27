@@ -33,8 +33,8 @@ android {
         applicationId = "click.e17.kalkron"
         minSdk = 26
         targetSdk = 37
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -46,8 +46,20 @@ android {
                 storePassword = keystoreProperties.getProperty("storePassword")
                 keyAlias = keystoreProperties.getProperty("keyAlias")
                 keyPassword = keystoreProperties.getProperty("keyPassword")
+
+                // minSdk 26 では AGP が v1（JAR）署名を省くが、
+                // 一部のエミュレータや改変された Android は v1 を要求するため明示的に付ける
+                enableV1Signing = true
+                enableV2Signing = true
+                enableV3Signing = true
             }
         }
+    }
+
+    signingConfigs.getByName("debug") {
+        // デバッグ APK も同じ理由で v1 署名を付ける
+        enableV1Signing = true
+        enableV2Signing = true
     }
 
     buildTypes {

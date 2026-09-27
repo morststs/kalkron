@@ -33,8 +33,8 @@ import click.e17.kalkron.ui.history.HistoryScreen
 import click.e17.kalkron.ui.theme.CyanDeep
 import click.e17.kalkron.ui.theme.ElectricCyan
 import click.e17.kalkron.ui.theme.Hairline
-import click.e17.kalkron.ui.theme.MetaText
-import click.e17.kalkron.ui.theme.ObsidianSurface
+import click.e17.kalkron.ui.theme.OnSurfaceMuted
+import click.e17.kalkron.ui.theme.ObsidianCanvas
 import click.e17.kalkron.ui.theme.ObsidianSurfaceLowest
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
@@ -80,7 +80,7 @@ fun CalculatorApp(
 
     Scaffold(
         modifier = modifier,
-        containerColor = ObsidianSurface,
+        containerColor = ObsidianCanvas,
         bottomBar = {
             Column {
                 HorizontalDivider(thickness = 1.dp, color = Hairline)
@@ -124,8 +124,8 @@ fun CalculatorApp(
                                 selectedIconColor = CyanDeep,
                                 selectedTextColor = ElectricCyan,
                                 indicatorColor = ElectricCyan,
-                                unselectedIconColor = MetaText,
-                                unselectedTextColor = MetaText,
+                                unselectedIconColor = OnSurfaceMuted,
+                                unselectedTextColor = OnSurfaceMuted,
                             ),
                         )
                     }

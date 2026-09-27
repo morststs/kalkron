@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
@@ -27,6 +28,7 @@ import click.e17.kalkron.domain.CalculatorEngine
 import click.e17.kalkron.ui.calculator.CalculatorUiState
 import click.e17.kalkron.ui.components.GlassPanel
 import click.e17.kalkron.ui.components.hairlineBorder
+import click.e17.kalkron.ui.theme.CyanDeep
 import click.e17.kalkron.ui.theme.ElectricCyan
 import click.e17.kalkron.ui.theme.ErrorRed
 import click.e17.kalkron.ui.theme.MetaText
@@ -61,8 +63,8 @@ fun CalculatorDisplay(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    HudChip(text = "DEC", accent = true)
-                    HudChip(text = "BIGDECIMAL")
+                    HudChip(text = "DEC", filled = true)
+                    HudChip(text = "BIGDEC")
                 }
                 StatusLamp(isError = uiState.isError)
             }
@@ -86,17 +88,27 @@ fun CalculatorDisplay(
                     .horizontalScroll(scrollState),
                 contentAlignment = Alignment.CenterEnd,
             ) {
-                Text(
-                    text = uiState.display,
-                    style = if (compact) {
-                        MaterialTheme.typography.displayMedium
-                    } else {
-                        MaterialTheme.typography.displayLarge
-                    },
-                    color = if (uiState.isError) ErrorRed else ElectricCyan,
-                    maxLines = 1,
-                    softWrap = false,
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = uiState.display,
+                        style = if (compact) {
+                            MaterialTheme.typography.displayMedium
+                        } else {
+                            MaterialTheme.typography.displayLarge
+                        },
+                        color = if (uiState.isError) ErrorRed else ElectricCyan,
+                        maxLines = 1,
+                        softWrap = false,
+                    )
+                    // 入力位置を示す縦棒
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Box(
+                        modifier = Modifier
+                            .width(3.dp)
+                            .height(if (compact) 26.dp else 38.dp)
+                            .background(if (uiState.isError) ErrorRed else ElectricCyan),
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(if (compact) 8.dp else 16.dp))
@@ -121,24 +133,27 @@ fun CalculatorDisplay(
     }
 }
 
-/** HUD 上の小さなラベル。枠だけの四角に等幅の小文字を入れる */
+/**
+ * HUD 上の小さなラベル。
+ * 現在の計算方式は塗りつぶし（filled）、補足情報は枠線だけで出し分ける。
+ */
 @Composable
 private fun HudChip(
     text: String,
     modifier: Modifier = Modifier,
-    accent: Boolean = false,
+    filled: Boolean = false,
 ) {
     val shape = MaterialTheme.shapes.extraSmall
     Box(
         modifier = modifier
             .clip(shape)
-            .hairlineBorder(shape)
+            .then(if (filled) Modifier.background(ElectricCyan) else Modifier.hairlineBorder(shape))
             .padding(horizontal = 6.dp, vertical = 3.dp),
     ) {
         Text(
             text = text,
             style = MaterialTheme.typography.labelSmall,
-            color = if (accent) ElectricCyan else OnSurfaceMuted,
+            color = if (filled) CyanDeep else OnSurfaceMuted,
         )
     }
 }
