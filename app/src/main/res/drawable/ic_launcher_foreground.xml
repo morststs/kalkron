@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    アプリアイコンの前景（電卓の絵）。PNG ではなくベクタなので解像度に依存しない。
+    Stitch のデザインに合わせ、黒曜石の地にエレクトリックシアンで描く。
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- 本体の外形（シアンで塗る） -->
+    <path
+        android:fillColor="#00F0FF"
+        android:pathData="M32,22h44a4,4 0 0 1 4,4v56a4,4 0 0 1 -4,4h-44a4,4 0 0 1 -4,-4v-56a4,4 0 0 1 4,-4z" />
+
+    <!-- 内側を地色でくり抜き、5px のシアンの枠だけを残す -->
+    <path
+        android:fillColor="#0D0E11"
+        android:pathData="M33,27h42v54h-42z" />
+
+    <!-- 表示部 -->
+    <path
+        android:fillColor="#00F0FF"
+        android:pathData="M37,32h34v11h-34z" />
+
+    <!-- キー（3 列 x 2 行） -->
+    <path
+        android:fillColor="#00F0FF"
+        android:pathData="M37,49h9v8h-9zM49,49h9v8h-9zM61,49h9v8h-9zM37,60h9v8h-9zM49,60h9v8h-9zM61,60h9v8h-9z" />
+
+    <!-- = キー（最下段・幅広） -->
+    <path
+        android:fillColor="#00F0FF"
+        android:pathData="M37,71h33v6h-33z" />
+</vector>

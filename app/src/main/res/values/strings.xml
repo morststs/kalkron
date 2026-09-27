@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Kalkron</string>
+
+    <!-- 画面の見出し。Stitch のデザインに合わせて英字表記にしている -->
+    <string name="mode_standard">STANDARD MODE</string>
+    <string name="mode_history">HISTORY MATRIX</string>
+
+    <!-- 下部ナビ -->
+    <string name="nav_calculator">STD</string>
+    <string name="nav_history">HIST</string>
+
+    <!-- 履歴画面 -->
+    <string name="clear_history">CLEAR HISTORY</string>
+    <string name="history_empty_title">NO ENTRIES</string>
+    <string name="history_empty_description">電卓で計算すると、ここに記録されます。</string>
+</resources>

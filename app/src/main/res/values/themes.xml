@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        Compose を使う場合、画面の見た目は Kotlin 側の CalculatorTheme で決まる。
+        この XML テーマは「Compose が描画を始める前のウィンドウ背景」にだけ影響する。
+        ダーク固定のデザインなので、起動時のちらつきを防ぐため黒曜石の地色を指定する。
+    -->
+    <style name="Theme.Calculator" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/obsidian_surface</item>
+    </style>
+</resources>

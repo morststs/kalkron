@@ -1,0 +1,25 @@
+# 作業用
+tmp/
+
+# Gradle
+.gradle/
+build/
+app/build/
+
+# Android Studio / IntelliJ
+*.iml
+.idea/
+.cxx/
+captures/
+.externalNativeBuild/
+
+# SDK の場所など、環境ごとに異なる設定（Android Studio が自動生成する）
+local.properties
+
+# リリース署名の鍵とパスワード。絶対にコミットしない
+keystore.properties
+*.jks
+*.keystore
+
+# ログ
+*.log

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Stitch デザインシステムの地色。XML 側（ウィンドウ背景・アイコン）で使う -->
+    <color name="obsidian_surface">#121316</color>
+    <color name="ic_launcher_background">#0D0E11</color>
+</resources>
