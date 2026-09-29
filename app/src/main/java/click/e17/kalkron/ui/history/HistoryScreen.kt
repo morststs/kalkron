@@ -33,10 +33,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import click.e17.kalkron.R
 import click.e17.kalkron.domain.CalculationRecord
+import click.e17.kalkron.domain.CalculatorMode
 import click.e17.kalkron.ui.AppViewModelProvider
 import click.e17.kalkron.ui.components.GlassPanel
-import click.e17.kalkron.ui.format.groupDigits
-import click.e17.kalkron.ui.format.groupExpression
 import click.e17.kalkron.ui.components.ModeHeader
 import click.e17.kalkron.ui.components.TelemetryStrip
 import click.e17.kalkron.ui.theme.AmberTelemetry
@@ -45,6 +44,7 @@ import click.e17.kalkron.ui.theme.CyanBright
 import click.e17.kalkron.ui.theme.ElectricCyan
 import click.e17.kalkron.ui.theme.Hairline
 import click.e17.kalkron.ui.theme.MetaText
+import click.e17.kalkron.ui.theme.VioletContainer
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -148,6 +148,13 @@ private fun HistoryItem(
     record: CalculationRecord,
     modifier: Modifier = Modifier,
 ) {
+    // モードごとの色。標準はシアン、関数電卓はアンバー
+    val modeColor = when (record.mode) {
+        CalculatorMode.STANDARD -> ElectricCyan
+        CalculatorMode.SCIENTIFIC -> AmberTelemetry
+        CalculatorMode.PROGRAMMER -> VioletContainer
+    }
+
     GlassPanel(modifier = modifier.fillMaxWidth()) {
         Row(modifier = Modifier.height(IntrinsicSize.Min)) {
             // 左端のアクセントバー
@@ -155,7 +162,7 @@ private fun HistoryItem(
                 modifier = Modifier
                     .width(2.dp)
                     .fillMaxHeight()
-                    .background(ElectricCyan),
+                    .background(modeColor),
             )
             Column(modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp)) {
                 Row(
@@ -163,9 +170,9 @@ private fun HistoryItem(
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     Text(
-                        text = "#%04d".format(record.id),
+                        text = "${record.mode.name}  #%04d".format(record.id),
                         style = MaterialTheme.typography.labelSmall,
-                        color = ElectricCyan,
+                        color = modeColor,
                     )
                     Text(
                         text = formatTimestamp(record.createdAt),
@@ -175,7 +182,7 @@ private fun HistoryItem(
                 }
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = groupExpression(record.expression),
+                    text = record.displayExpression(),
                     style = MaterialTheme.typography.labelMedium,
                     color = MetaText,
                     modifier = Modifier.fillMaxWidth(),
@@ -183,7 +190,7 @@ private fun HistoryItem(
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = "= ${groupDigits(record.result)}",
+                    text = "= ${record.displayResult()}",
                     style = MaterialTheme.typography.headlineSmall,
                     color = CyanBright,
                     modifier = Modifier.fillMaxWidth(),

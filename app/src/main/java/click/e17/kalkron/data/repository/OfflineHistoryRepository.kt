@@ -29,6 +29,7 @@ class OfflineHistoryRepository(
                 expression = calculation.expression,
                 result = calculation.result,
                 createdAt = now(),
+                mode = calculation.mode,
             ).toEntity()
         )
     }

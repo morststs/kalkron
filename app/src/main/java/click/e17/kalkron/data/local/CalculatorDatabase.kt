@@ -13,7 +13,7 @@ import androidx.room.RoomDatabase
  */
 @Database(
     entities = [CalculationHistoryEntity::class],
-    version = 1,
+    version = 2,
     exportSchema = true,
 )
 abstract class CalculatorDatabase : RoomDatabase() {
@@ -32,9 +32,10 @@ abstract class CalculatorDatabase : RoomDatabase() {
                     CalculatorDatabase::class.java,
                     "calculator.db",
                 )
-                    // スキーマ変更時はテーブルを作り直す設定。計算履歴は失っても
-                    // 再現可能な情報なので、Migration は定義していない。
-                    .fallbackToDestructiveMigration(dropAllTables = true)
+                    // スキーマを変えるときは Migration を足して、既存の履歴を残す
+                    .addMigrations(MIGRATION_1_2)
+                    // アプリを古いバージョンに戻した場合だけは作り直す
+                    .fallbackToDestructiveMigrationOnDowngrade(dropAllTables = true)
                     .build()
                     .also { instance = it }
             }

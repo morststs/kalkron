@@ -2,6 +2,7 @@ package click.e17.kalkron.ui.calculator
 
 import click.e17.kalkron.MainDispatcherRule
 import click.e17.kalkron.domain.CalculatorAction
+import click.e17.kalkron.domain.CalculatorMode
 import click.e17.kalkron.domain.Operator
 import click.e17.kalkron.fake.FakeHistoryRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -79,5 +80,15 @@ class CalculatorViewModelTest {
 
         assertTrue(viewModel.uiState.value.isError)
         assertTrue(repository.saved.isEmpty())
+    }
+
+    @Test
+    fun `標準モードの計算はSTANDARDとして保存される`() = runTest {
+        viewModel.onAction(CalculatorAction.Digit(2))
+        viewModel.onAction(CalculatorAction.Operate(Operator.ADD))
+        viewModel.onAction(CalculatorAction.Digit(3))
+        viewModel.onAction(CalculatorAction.Equals)
+
+        assertEquals(CalculatorMode.STANDARD, repository.saved.single().mode)
     }
 }

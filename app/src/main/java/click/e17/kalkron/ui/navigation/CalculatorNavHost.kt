@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Calculate
+import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.Functions
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -30,6 +32,8 @@ import androidx.navigation.compose.rememberNavController
 import click.e17.kalkron.R
 import click.e17.kalkron.ui.calculator.CalculatorScreen
 import click.e17.kalkron.ui.history.HistoryScreen
+import click.e17.kalkron.ui.programmer.ProgrammerScreen
+import click.e17.kalkron.ui.scientific.ScientificScreen
 import click.e17.kalkron.ui.theme.CyanDeep
 import click.e17.kalkron.ui.theme.ElectricCyan
 import click.e17.kalkron.ui.theme.Hairline
@@ -49,6 +53,12 @@ import kotlin.reflect.KClass
 data object CalculatorRoute
 
 @Serializable
+data object ScientificRoute
+
+@Serializable
+data object ProgrammerRoute
+
+@Serializable
 data object HistoryRoute
 
 /** 下部ナビに並べる項目 */
@@ -61,6 +71,8 @@ private data class NavItem(
 
 private val NAV_ITEMS = listOf(
     NavItem(R.string.nav_calculator, Icons.Default.Calculate, CalculatorRoute, CalculatorRoute::class),
+    NavItem(R.string.nav_scientific, Icons.Default.Functions, ScientificRoute, ScientificRoute::class),
+    NavItem(R.string.nav_programmer, Icons.Default.Code, ProgrammerRoute, ProgrammerRoute::class),
     NavItem(R.string.nav_history, Icons.Default.History, HistoryRoute, HistoryRoute::class),
 )
 
@@ -68,7 +80,7 @@ private val NAV_ITEMS = listOf(
  * アプリ全体の骨組み。下部ナビと画面遷移をここで定義する。
  *
  * Stitch のデザインが下部ナビでモードを切り替える構成なので、
- * それに合わせて電卓（STD）と履歴（HIST）の 2 つを並べている。
+ * それに合わせて標準（STD）・関数電卓（SCI）・プログラマー（PROG）・履歴（HIST）の 4 つを並べている。
  */
 @Composable
 fun CalculatorApp(
@@ -139,6 +151,8 @@ fun CalculatorApp(
             modifier = Modifier.padding(innerPadding),
         ) {
             composable<CalculatorRoute> { CalculatorScreen() }
+            composable<ScientificRoute> { ScientificScreen() }
+            composable<ProgrammerRoute> { ProgrammerScreen() }
             composable<HistoryRoute> { HistoryScreen() }
         }
     }

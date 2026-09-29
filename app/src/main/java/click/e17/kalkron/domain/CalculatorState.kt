@@ -36,10 +36,13 @@ data class CalculatorState(
 
 /**
  * 「= まで到達して完了した 1 回の計算」。履歴として保存する単位。
+ *
+ * @param mode どのモードの計算か。標準モードは省略できるよう既定値を持つ
  */
 data class Calculation(
     val expression: String,
     val result: String,
+    val mode: CalculatorMode = CalculatorMode.STANDARD,
 )
 
 /**

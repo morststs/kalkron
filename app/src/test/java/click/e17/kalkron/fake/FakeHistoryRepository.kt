@@ -33,6 +33,7 @@ class FakeHistoryRepository(
             expression = calculation.expression,
             result = calculation.result,
             createdAt = now(),
+            mode = calculation.mode,
         )
     }
 

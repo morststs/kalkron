@@ -101,25 +101,27 @@ val Typography = Typography(
         lineHeight = 20.sp,
     ),
     // label-*: キーキャップ、チップ、テレメトリ表示。字間を広めに取るのが特徴
+    // デザイン定義（10 / 12 / 14px）のままでは端末で小さすぎて読みにくいため、
+    // それぞれ 2sp ずつ大きくしている（最小 12sp）
     labelLarge = TextStyle(
         fontFamily = JetBrainsMono,
         fontWeight = FontWeight(500),
-        fontSize = 14.sp,
-        lineHeight = 18.sp,
+        fontSize = 16.sp,
+        lineHeight = 20.sp,
         letterSpacing = 0.06.em,
     ),
     labelMedium = TextStyle(
         fontFamily = JetBrainsMono,
         fontWeight = FontWeight(500),
-        fontSize = 12.sp,
-        lineHeight = 16.sp,
+        fontSize = 14.sp,
+        lineHeight = 18.sp,
         letterSpacing = 0.08.em,
     ),
     labelSmall = TextStyle(
         fontFamily = JetBrainsMono,
         fontWeight = FontWeight(600),
-        fontSize = 10.sp,
-        lineHeight = 12.sp,
+        fontSize = 12.sp,
+        lineHeight = 16.sp,
         letterSpacing = 0.12.em,
     ),
 )

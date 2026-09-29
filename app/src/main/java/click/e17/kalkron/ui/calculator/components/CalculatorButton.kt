@@ -16,10 +16,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import click.e17.kalkron.ui.components.hairlineBorder
@@ -63,6 +65,8 @@ fun CalculatorButton(
     modifier: Modifier = Modifier,
     style: CalculatorButtonStyle = CalculatorButtonStyle.Number,
     icon: ImageVector? = null,
+    /** false のときは暗く表示し、押しても反応しない（今の基数で使えない数字キーなど） */
+    enabled: Boolean = true,
 ) {
     // キーの角丸はデザイン画に合わせて 8dp（パネルと同じ large）
     val shape = MaterialTheme.shapes.large
@@ -86,6 +90,7 @@ fun CalculatorButton(
 
     Box(
         modifier = modifier
+            .alpha(if (enabled) 1f else 0.3f)
             // 発光は影の色で表現する（色付きの影は API 28 以降で有効）
             .shadow(
                 elevation = if (isAccent || pressed) 12.dp else 0.dp,
@@ -107,6 +112,7 @@ fun CalculatorButton(
                 }
             )
             .clickable(
+                enabled = enabled,
                 interactionSource = interactionSource,
                 indication = null,
                 role = Role.Button,
@@ -136,20 +142,27 @@ fun CalculatorButton(
         } else {
             Text(
                 text = label,
-                // 役割ごとに文字の大きさを変える。数字と演算子はしっかり大きく取る
-                style = when (style) {
-                    CalculatorButtonStyle.Number ->
-                        MaterialTheme.typography.labelLarge.copy(fontSize = 22.sp)
-
-                    // ÷ や − は字面が小さく見えるため、数字より大きめに取る
-                    CalculatorButtonStyle.Operator, CalculatorButtonStyle.Accent ->
-                        MaterialTheme.typography.labelLarge.copy(fontSize = 32.sp)
-
-                    CalculatorButtonStyle.Function ->
-                        MaterialTheme.typography.labelLarge
-                },
+                style = MaterialTheme.typography.labelLarge.copy(
+                    fontSize = keyLabelFontSize(style, label),
+                ),
                 color = contentColor,
             )
         }
     }
+}
+
+/**
+ * キーの文字の大きさ。
+ *
+ * 1 文字のキーは役割ごとに大きさを変え、数字と演算子をしっかり大きく取る。
+ * 2 文字以上の単語（AC, MOD, sin など）は、キーの種類にかかわらず単語用の大きさ（labelLarge と同じ 16sp）にそろえる。
+ * 演算子の列にある MOD などが記号用の大きさで表示され、隣のキーより極端に大きくなるのを防ぐため。
+ */
+internal fun keyLabelFontSize(style: CalculatorButtonStyle, label: String): TextUnit = when {
+    // 数えるのは見た目の文字数。上付きの ² や ⁻¹ も 1 文字として数える
+    label.codePointCount(0, label.length) >= 2 -> 16.sp
+    style == CalculatorButtonStyle.Number -> 22.sp
+    // ÷ や − は字面が小さく見えるため、数字より大きめに取る
+    style == CalculatorButtonStyle.Operator || style == CalculatorButtonStyle.Accent -> 26.sp
+    else -> 16.sp
 }

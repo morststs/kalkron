@@ -5,9 +5,13 @@
     <!-- 画面の見出し。Stitch のデザインに合わせて英字表記にしている -->
     <string name="mode_standard">STANDARD MODE</string>
     <string name="mode_history">HISTORY MATRIX</string>
+    <string name="mode_scientific">SCIENTIFIC MODE</string>
+    <string name="mode_programmer">PROGRAMMER MODE</string>
 
     <!-- 下部ナビ -->
     <string name="nav_calculator">STD</string>
+    <string name="nav_scientific">SCI</string>
+    <string name="nav_programmer">PROG</string>
     <string name="nav_history">HIST</string>
 
     <!-- 履歴画面 -->

@@ -27,8 +27,6 @@ import androidx.compose.ui.unit.dp
 import click.e17.kalkron.domain.CalculatorEngine
 import click.e17.kalkron.ui.calculator.CalculatorUiState
 import click.e17.kalkron.ui.components.GlassPanel
-import click.e17.kalkron.ui.components.hairlineBorder
-import click.e17.kalkron.ui.theme.CyanDeep
 import click.e17.kalkron.ui.theme.ElectricCyan
 import click.e17.kalkron.ui.theme.ErrorRed
 import click.e17.kalkron.ui.theme.MetaText
@@ -56,16 +54,19 @@ fun CalculatorDisplay(
     GlassPanel(modifier = modifier) {
         Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp)) {
 
-            // --- チップ列: 左に計算方式、右に状態ランプ ---
+            // --- 上段: 左に計算方式、右に状態ランプ ---
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    HudChip(text = "DEC", filled = true)
-                    HudChip(text = "BIGDEC")
-                }
+                // 計算方式は切り替えられないため、ボタンやタブに見えないよう地や枠を付けない
+                // DEC: 10 進数で計算 / BIGDEC: BigDecimal で計算（0.1 + 0.2 が誤差なく 0.3 になる）
+                Text(
+                    text = "DEC · BIGDEC",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = OnSurfaceMuted,
+                )
                 StatusLamp(isError = uiState.isError)
             }
 
@@ -130,31 +131,6 @@ fun CalculatorDisplay(
                 )
             }
         }
-    }
-}
-
-/**
- * HUD 上の小さなラベル。
- * 現在の計算方式は塗りつぶし（filled）、補足情報は枠線だけで出し分ける。
- */
-@Composable
-private fun HudChip(
-    text: String,
-    modifier: Modifier = Modifier,
-    filled: Boolean = false,
-) {
-    val shape = MaterialTheme.shapes.extraSmall
-    Box(
-        modifier = modifier
-            .clip(shape)
-            .then(if (filled) Modifier.background(ElectricCyan) else Modifier.hairlineBorder(shape))
-            .padding(horizontal = 6.dp, vertical = 3.dp),
-    ) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.labelSmall,
-            color = if (filled) CyanDeep else OnSurfaceMuted,
-        )
     }
 }
 

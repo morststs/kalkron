@@ -13,4 +13,5 @@ data class CalculationRecord(
     val expression: String,
     val result: String,
     val createdAt: Long,
+    val mode: CalculatorMode = CalculatorMode.STANDARD,
 )

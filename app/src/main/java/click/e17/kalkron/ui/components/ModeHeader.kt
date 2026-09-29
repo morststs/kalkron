@@ -18,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import click.e17.kalkron.ui.theme.CyanDeep
 import click.e17.kalkron.ui.theme.ElectricCyan
 import click.e17.kalkron.ui.theme.MetaText
@@ -60,7 +59,7 @@ fun ModeHeader(
         Column {
             Text(
                 text = "KALKRON.SYS",
-                style = MaterialTheme.typography.labelLarge.copy(fontSize = 15.sp),
+                style = MaterialTheme.typography.labelLarge,
                 color = OnSurfaceBright,
             )
             Text(

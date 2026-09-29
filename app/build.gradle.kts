@@ -33,8 +33,8 @@ android {
         applicationId = "click.e17.kalkron"
         minSdk = 26
         targetSdk = 37
-        versionCode = 2
-        versionName = "1.0.1"
+        versionCode = 4
+        versionName = "1.2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -83,6 +83,13 @@ android {
     buildFeatures {
         // Jetpack Compose を有効化する
         compose = true
+    }
+
+    sourceSets {
+        getByName("androidTest") {
+            // マイグレーションのテストで、書き出したスキーマ（schemas/*.json）を読めるようにする
+            assets.srcDir("$projectDir/schemas")
+        }
     }
 }
 
@@ -135,6 +142,7 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.ui.test.junit4)
+    androidTestImplementation(libs.androidx.room.testing)
 
     // --- デバッグビルド専用（プレビュー・レイアウト検査用） ---
     debugImplementation(libs.androidx.ui.tooling)

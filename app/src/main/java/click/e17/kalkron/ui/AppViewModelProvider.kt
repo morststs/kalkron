@@ -7,6 +7,8 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import click.e17.kalkron.CalculatorApplication
 import click.e17.kalkron.ui.calculator.CalculatorViewModel
 import click.e17.kalkron.ui.history.HistoryViewModel
+import click.e17.kalkron.ui.programmer.ProgrammerViewModel
+import click.e17.kalkron.ui.scientific.ScientificViewModel
 
 /**
  * ViewModel の生成方法をまとめた Factory。
@@ -23,6 +25,12 @@ object AppViewModelProvider {
         }
         initializer {
             HistoryViewModel(calculatorApplication().container.historyRepository)
+        }
+        initializer {
+            ScientificViewModel(calculatorApplication().container.historyRepository)
+        }
+        initializer {
+            ProgrammerViewModel(calculatorApplication().container.historyRepository)
         }
     }
 }
