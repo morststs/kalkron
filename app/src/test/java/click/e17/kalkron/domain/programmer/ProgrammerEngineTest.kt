@@ -226,4 +226,12 @@ class ProgrammerEngineTest {
         assertEquals(0L, ProgrammerEngine.currentOperand(typed("12 +")))
         assertEquals(15L, ProgrammerEngine.currentOperand(press(Equals, from = typed("12 + 3")).state))
     }
+
+    @Test
+    fun `履歴にはANSを値に置き換えた式を残す`() {
+        val result = press(Equals, from = typed("ANS AND F", Radix.HEX).copy(ans = 0xFF))
+        assertEquals(Calculation("FF AND F", "F (HEX)", CalculatorMode.PROGRAMMER), result.completed)
+        val negative = press(Equals, from = typed("ANS × 2").copy(ans = -5))
+        assertEquals("(−5) × 2", negative.completed?.expression)
+    }
 }

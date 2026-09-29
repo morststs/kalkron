@@ -32,7 +32,9 @@ class ProgFormatTest {
     @Test
     fun `数値は今の基数で表示する`() {
         val tokens = listOf(ProgToken.Num(-5))
-        assertEquals("-5", ProgFormat.expression(tokens, Radix.DEC, WordSize.BYTE, signed = true))
+        // 負の数の符号は、キーで入れる単項の − と同じ記号にする
+        assertEquals("−5", ProgFormat.expression(tokens, Radix.DEC, WordSize.BYTE, signed = true))
+        assertEquals("10 − −5", ProgFormat.expression(listOf(ProgToken.Num(10), ProgToken.Sym(ProgSymbol.MINUS)) + tokens, Radix.DEC, WordSize.BYTE, signed = true))
         assertEquals("FB", ProgFormat.expression(tokens, Radix.HEX, WordSize.BYTE, signed = true))
     }
 

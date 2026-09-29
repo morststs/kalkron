@@ -170,7 +170,11 @@ object ScientificEngine {
         return try {
             val value = Evaluator.evaluate(Parser.parse(state.tokens), state.context())
             val calculation = Calculation(
-                expression = ScientificFormat.expression(state.tokens),
+                // 履歴には ANS・M を値に置き換えた式を残す
+                expression = ScientificFormat.expression(
+                    state.tokens,
+                    values = mapOf(Symbol.ANS to state.ans, Symbol.MEMORY to (state.memory ?: 0.0)),
+                ),
                 result = ScientificFormat.number(value),
                 mode = CalculatorMode.SCIENTIFIC,
             )

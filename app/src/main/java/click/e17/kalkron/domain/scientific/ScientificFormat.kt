@@ -33,10 +33,17 @@ object ScientificFormat {
         }
     }
 
-    /** トークン列を画面に出す式の文字列にする */
-    fun expression(tokens: List<Token>): String = buildString {
+    /**
+     * トークン列を画面に出す式の文字列にする。
+     *
+     * @param values 値に置き換える記号（ANS・M）とその値。履歴に残すときに渡す。
+     *   後から履歴を見たとき、ANS や M が何の値だったか分からなくなるため
+     */
+    fun expression(tokens: List<Token>, values: Map<Symbol, Double> = emptyMap()): String = buildString {
         tokens.forEachIndexed { index, token ->
+            val value = (token as? Token.Sym)?.symbol?.let { values[it] }
             when {
+                value != null -> append(valueText(value, tokens.getOrNull(index - 1), tokens.getOrNull(index + 1)))
                 token is Token.Sym && token.symbol == Symbol.COMMA -> append(", ")
                 token is Token.Sym && token.symbol in SPACED_OPERATORS &&
                     !isUnaryMinus(token, tokens.getOrNull(index - 1)) ->
@@ -45,6 +52,28 @@ object ScientificFormat {
             }
         }
     }.trim()
+
+    /**
+     * ANS・M を置き換える値の文字列。負の値や、暗黙の掛け算で隣と続けて読めてしまう位置では括弧で囲む
+     * （2ANS の ANS が 5 のとき、25 ではなく 2(5) とする）。
+     */
+    private fun valueText(value: Double, previous: Token?, next: Token?): String {
+        // 符号は式の単項マイナスと同じ − にする（指数表記の E-20 の - はそのまま）
+        val text = if (value < 0) "−" + number(-value) else number(value)
+        val needsParens = value < 0 || isImplicitLeft(previous) || isImplicitRight(next)
+        return if (needsParens) "($text)" else text
+    }
+
+    /** 直後の値と暗黙の掛け算になるトークン（数・定数・閉じ括弧・²） */
+    private fun isImplicitLeft(token: Token?): Boolean =
+        token is Token.Num || (token is Token.Sym && token.symbol in VALUE_END)
+
+    /** 直前の値と暗黙の掛け算になるトークン（数・定数・関数・開き括弧） */
+    private fun isImplicitRight(token: Token?): Boolean =
+        token is Token.Num || token is Token.Fn || (token is Token.Sym && token.symbol in VALUE_START)
+
+    private val VALUE_START = setOf(Symbol.X, Symbol.PI, Symbol.E, Symbol.ANS, Symbol.MEMORY, Symbol.LEFT_PAREN)
+    private val VALUE_END = setOf(Symbol.X, Symbol.PI, Symbol.E, Symbol.ANS, Symbol.MEMORY, Symbol.RIGHT_PAREN, Symbol.SQUARE)
 
     private val SPACED_OPERATORS = setOf(Symbol.PLUS, Symbol.MINUS, Symbol.TIMES, Symbol.DIVIDE)
 

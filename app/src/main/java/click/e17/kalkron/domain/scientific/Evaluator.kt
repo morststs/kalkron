@@ -14,6 +14,7 @@ import kotlin.math.cosh
 import kotlin.math.exp
 import kotlin.math.ln
 import kotlin.math.log10
+import kotlin.math.max
 import kotlin.math.pow
 import kotlin.math.sin
 import kotlin.math.sinh
@@ -36,8 +37,15 @@ data class EvalContext(
  */
 object Evaluator {
 
-    /** これより絶対値が小さい結果は 0 として扱う（sin(π) を 0 にするため） */
+    /** 三角関数の結果がこれより絶対値が小さければ 0 として扱う（sin(π) を 0 にするため） */
     private const val ZERO_THRESHOLD = 1e-12
+
+    /**
+     * 足し算・引き算の結果が、元の値の大きさに対してこの割合より小さければ 0 として扱う。
+     * Double は 0.1 などを正確に表せないため、0.1 + 0.2 − 0.3 が 5.55e-17 になる（桁落ち）。
+     * 結果の絶対値ではなく元の値との比で判定するので、2^−50 のような本当に小さい値は残る。
+     */
+    private const val CANCELLATION_RATIO = 1e-12
 
     fun evaluate(expr: Expr, context: EvalContext = EvalContext()): Double {
         // 積分の評価回数の予算は、入れ子の積分も含めて1回の評価全体で共有する
@@ -45,7 +53,6 @@ object Evaluator {
         return when {
             value.isNaN() -> throw CalcException(CalcError.DOMAIN)
             value.isInfinite() -> throw CalcException(CalcError.OVERFLOW)
-            abs(value) < ZERO_THRESHOLD -> 0.0
             else -> value
         }
     }
@@ -66,6 +73,10 @@ object Evaluator {
 
     private fun snapToZero(value: Double): Double = if (abs(value) < ZERO_THRESHOLD) 0.0 else value
 
+    /** 足し算・引き算の桁落ちで残った誤差を 0 にする */
+    private fun cancelNoise(sum: Double, left: Double, right: Double): Double =
+        if (abs(sum) < CANCELLATION_RATIO * max(abs(left), abs(right))) 0.0 else sum
+
     private fun constant(symbol: Symbol, context: EvalContext): Double = when (symbol) {
         Symbol.PI -> PI
         Symbol.E -> E
@@ -78,12 +89,14 @@ object Evaluator {
         val left = eval(expr.left, context, x, budget)
         val right = eval(expr.right, context, x, budget)
         return when (expr.op) {
-            BinaryOp.ADD -> left + right
-            BinaryOp.SUBTRACT -> left - right
+            BinaryOp.ADD -> cancelNoise(left + right, left, right)
+            BinaryOp.SUBTRACT -> cancelNoise(left - right, left, right)
             BinaryOp.MULTIPLY -> left * right
             BinaryOp.DIVIDE ->
                 if (right == 0.0) throw CalcException(CalcError.DIVISION_BY_ZERO) else left / right
-            BinaryOp.POWER -> left.pow(right)
+            // 0 の負の累乗は 1 ÷ 0 と同じ。そのまま計算すると ∞ になり「オーバーフロー」と表示されてしまう
+            BinaryOp.POWER ->
+                if (left == 0.0 && right < 0) throw CalcException(CalcError.DIVISION_BY_ZERO) else left.pow(right)
         }
     }
 

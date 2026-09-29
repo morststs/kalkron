@@ -48,8 +48,9 @@ fun BitGrid(
     modifier: Modifier = Modifier,
 ) {
     val pageCount = maxOf(1, bits.size / BITS_PER_PAGE)
-    var page by rememberSaveable { mutableIntStateOf(0) }
-    // 語長を縮めて範囲外になったら、範囲内の最上位ページを表示する
+    // 語長（ビット数）が変わったら最下位のページに戻す。キーに語長を渡すと、値が変わったときに作り直される。
+    // 64→8→64 と切り替えたとき、以前開いていた上位のページが突然表示されるのを防ぐ
+    var page by rememberSaveable(bits.size) { mutableIntStateOf(0) }
     val current = page.coerceIn(0, pageCount - 1)
 
     val low = current * BITS_PER_PAGE

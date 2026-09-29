@@ -28,12 +28,23 @@ object Calculus {
     private const val MIN_DEPTH = 4
 
     /**
+     * 丸め誤差とみなす割合。微分・積分の結果が「関数の値の大きさから見込まれる大きさ」に対して
+     * この割合より小さければ 0 にする（∫(sin(x), 0, 2π) が 1.1e-16 になるのを防ぐ）。
+     * 関数の値そのものと比べるので、∫(x^20, 0, 0.1) のような本当に小さい値は残る。
+     */
+    private const val NOISE_RATIO = 1e-12
+
+    /**
      * f の a における傾き（微分係数）を5点差分公式で求める。
      * f'(a) ≈ [−f(a+2h) + 8f(a+h) − 8f(a−h) + f(a−2h)] / 12h
      */
     fun derivative(f: (Double) -> Double, a: Double): Double {
         val h = 1e-3 * max(1.0, abs(a))
-        return (-f(a + 2 * h) + 8 * f(a + h) - 8 * f(a - h) + f(a - 2 * h)) / (12 * h)
+        val values = listOf(f(a + 2 * h), f(a + h), f(a - h), f(a - 2 * h))
+        val slope = (-values[0] + 8 * values[1] - 8 * values[2] + values[3]) / (12 * h)
+        // 関数の値の丸め誤差は h で割られて大きくなるため、「関数の値 ÷ h」を基準に判定する
+        val scale = values.maxOf { abs(it) } / h
+        return if (abs(slope) < NOISE_RATIO * scale) 0.0 else slope
     }
 
     /**
@@ -55,7 +66,10 @@ object Calculus {
         val scale = max(1.0, abs(whole))
         val tolerance = RELATIVE_TOLERANCE * scale
         val minTolerance = TOLERANCE_FLOOR * scale
-        return refine(counted, a, b, fa, fm, fb, whole, tolerance, minTolerance, MAX_DEPTH)
+        val area = refine(counted, a, b, fa, fm, fb, whole, tolerance, minTolerance, MAX_DEPTH)
+        // 「区間の幅 × 関数の値の最大」が、打ち消し合いが無いときに見込まれる積分の大きさ
+        val expectedSize = abs(b - a) * counted.maxAbs
+        return if (abs(area) < NOISE_RATIO * expectedSize) 0.0 else area
     }
 
     /** シンプソン則: 区間 [a, b] の積分を、両端と中点の値の重み付き平均で近似する */
@@ -92,15 +106,19 @@ object Calculus {
             refine(f, m, b, fm, frm, fb, right, half, minTolerance, depth - 1)
     }
 
-    /** f を呼ぶたびに予算を1つ使う。NaN は定義域エラーにする */
+    /** f を呼ぶたびに予算を1つ使う。NaN は定義域エラーにする。値の絶対値の最大も記録する */
     private class CountedFunction(
         private val f: (Double) -> Double,
         private val budget: EvaluationBudget,
     ) {
+        var maxAbs = 0.0
+            private set
+
         operator fun invoke(t: Double): Double {
             budget.spend()
             val y = f(t)
             if (y.isNaN()) throw CalcException(CalcError.DOMAIN)
+            maxAbs = max(maxAbs, abs(y))
             return y
         }
     }

@@ -17,6 +17,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import click.e17.kalkron.ui.theme.CyanDeep
 import click.e17.kalkron.ui.theme.ElectricCyan
@@ -58,7 +61,11 @@ fun ModeHeader(
 
         Column {
             Text(
-                text = "KALKRON.SYS",
+                // 末尾の _ はロゴの >_ と同じ入力待ちのカーソルに見立て、ロゴと同じシアンにする
+                text = buildAnnotatedString {
+                    append("KALKRON")
+                    withStyle(SpanStyle(color = ElectricCyan)) { append("_") }
+                },
                 style = MaterialTheme.typography.labelLarge,
                 color = OnSurfaceBright,
             )

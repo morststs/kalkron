@@ -173,7 +173,8 @@ object ProgrammerEngine {
         return try {
             val value = ProgEvaluator.evaluate(ProgParser.parse(state.tokens), state.context())
             val calculation = Calculation(
-                expression = ProgFormat.expression(state.tokens, state.radix, state.wordSize, state.signed),
+                // 履歴には ANS を値に置き換えた式を残す
+                expression = ProgFormat.expression(state.tokens, state.radix, state.wordSize, state.signed, ans = state.ans),
                 result = ProgFormat.result(value, state.radix, state.wordSize, state.signed),
                 mode = CalculatorMode.PROGRAMMER,
             )

@@ -215,4 +215,28 @@ class ScientificEngineTest {
         assertNull(ScientificEngine.preview(typed("∫(x²,0,1)")))
         assertNull(ScientificEngine.preview(typed("d/dx(x²,1)")))
     }
+
+    @Test
+    fun `履歴にはANSとMを値に置き換えた式を残す`() {
+        val result = press(Equals, from = typed("ANS×2+M").copy(ans = 5.0, memory = 1.5))
+        assertEquals(Calculation("5 × 2 + 1.5", "11.5", CalculatorMode.SCIENTIFIC), result.completed)
+        // 画面の式は ANS のまま
+        assertEquals("ANS × 2 + M", ScientificFormat.expression(result.state.tokens))
+    }
+
+    @Test
+    fun `負の値に置き換えるときは括弧で囲む`() {
+        val result = press(Equals, from = typed("2^ANS").copy(ans = -1.0))
+        assertEquals("2^(−1)", result.completed?.expression)
+        val tiny = press(Equals, from = typed("ANS×2").copy(ans = -1.5e-20))
+        assertEquals("(−1.5E-20) × 2", tiny.completed?.expression)
+    }
+
+    @Test
+    fun `暗黙の掛け算で数と隣り合うときも括弧で囲む`() {
+        // 2ANS をそのまま 25 と書くと、25 という1つの数に読めてしまう
+        assertEquals("2(5)", press(Equals, from = typed("2ANS").copy(ans = 5.0)).completed?.expression)
+        assertEquals("(5)π", press(Equals, from = typed("ANSπ").copy(ans = 5.0)).completed?.expression)
+        assertEquals("sin(5)", press(Equals, from = typed("sin(ANS)").copy(ans = 5.0)).completed?.expression)
+    }
 }

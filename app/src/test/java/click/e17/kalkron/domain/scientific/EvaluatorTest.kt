@@ -37,10 +37,41 @@ class EvaluatorTest {
     }
 
     @Test
-    fun `ごく小さい結果は0にする`() {
+    fun `三角関数の誤差によるごく小さい値は0にする`() {
         // Double では sin(π) = 1.22e-16 になるが、表示上は 0 にしたい
         assertEquals(0.0, calc("sin(π)"), 0.0)
-        assertEquals(0.0, calc("1÷10^13"), 0.0)
+    }
+
+    @Test
+    fun `足し算と引き算の桁落ちによる誤差は0にする`() {
+        // Double では 0.1 + 0.2 − 0.3 = 5.55e-17 になる
+        assertEquals(0.0, calc("0.1+0.2−0.3"), 0.0)
+        assertEquals(0.0, calc("0.3−0.1−0.2"), 0.0)
+    }
+
+    @Test
+    fun `本当に小さい値は0にしない`() {
+        assertEquals(Math.pow(2.0, -50.0), calc("2^−50"), 0.0)
+        // プランク定数ほどの値
+        assertEquals(6.626e-34, calc("6.626÷10^34"), 1e-46)
+        assertEquals(1e-13, calc("1÷10^13"), 1e-27)
+    }
+
+    @Test
+    fun `微分と積分の丸め誤差によるごく小さい値は0にする`() {
+        assertEquals(0.0, calc("∫(sin(x),0,2π)"), 0.0)
+        assertEquals(0.0, calc("∫(cos(x),0,π)"), 0.0)
+        assertEquals(0.0, calc("d/dx(sin(x),π÷2)"), 0.0)
+        assertEquals(0.0, calc("d/dx(x²,0)"), 0.0)
+    }
+
+    @Test
+    fun `微分と積分の本当に小さい値は0にしない`() {
+        assertEquals(3e-10, calc("d/dx(x^3,0.00001)"), 1e-15)
+        // 積分の許容誤差は 1 より小さい値に対しては絶対値で決まるため、ごく小さい積分は
+        // 12桁までは合わない。ここでは 0 にならず、上から5桁ほどが合っていることを確かめる
+        val expected = Math.pow(0.1, 21.0) / 21
+        assertEquals(expected, calc("∫(x^20,0,0.1)"), expected * 1e-5)
     }
 
     @Test
@@ -99,6 +130,9 @@ class EvaluatorTest {
     fun `エラーの種類`() {
         assertCalcError(CalcError.DIVISION_BY_ZERO) { calc("1÷0") }
         assertCalcError(CalcError.DIVISION_BY_ZERO) { calc("0÷0") }
+        // 0 の負の累乗は 1 ÷ 0 と同じ
+        assertCalcError(CalcError.DIVISION_BY_ZERO) { calc("0^−1") }
+        assertCalcError(CalcError.DIVISION_BY_ZERO) { calc("0^−0.5") }
         assertCalcError(CalcError.DOMAIN) { calc("ln(0)") }
         assertCalcError(CalcError.DOMAIN) { calc("ln(−1)") }
         assertCalcError(CalcError.DOMAIN) { calc("log(−1)") }
