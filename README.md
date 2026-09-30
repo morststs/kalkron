@@ -82,6 +82,8 @@ keyPassword=****
 
 ## ライセンス
 
+Kalkron のソースコードは [MIT License](LICENSE) です。
+
 同梱しているフォント（JetBrains Mono / Space Grotesk / Geist）は
 いずれも SIL Open Font License 1.1 です。ライセンス全文は
 `app/src/main/assets/licenses/` に含まれています。
