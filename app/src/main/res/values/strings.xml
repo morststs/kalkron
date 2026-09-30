@@ -7,6 +7,7 @@
     <string name="mode_history">HISTORY MATRIX</string>
     <string name="mode_scientific">SCIENTIFIC MODE</string>
     <string name="mode_programmer">PROGRAMMER MODE</string>
+    <string name="mode_info">SYSTEM INFO</string>
 
     <!-- 下部ナビ -->
     <string name="nav_calculator">STD</string>
@@ -18,4 +19,12 @@
     <string name="clear_history">CLEAR HISTORY</string>
     <string name="history_empty_title">NO ENTRIES</string>
     <string name="history_empty_description">電卓で計算すると、ここに記録されます。</string>
+
+    <!-- 情報画面 -->
+    <string name="info_open">アプリの情報</string>
+    <string name="info_back">戻る</string>
+    <string name="info_description">標準・関数電卓・プログラマーの 3 モードを備えた電卓です。計算履歴は端末内にだけ保存し、外部には送信しません。</string>
+    <string name="info_privacy">プライバシーポリシー</string>
+    <string name="info_contact">お問い合わせ（メール）</string>
+    <string name="info_source">ソースコード（GitHub）</string>
 </resources>

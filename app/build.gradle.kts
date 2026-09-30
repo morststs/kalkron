@@ -33,8 +33,8 @@ android {
         applicationId = "click.e17.kalkron"
         minSdk = 26
         targetSdk = 37
-        versionCode = 5
-        versionName = "1.2.1"
+        versionCode = 6
+        versionName = "1.3.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -53,6 +53,15 @@ android {
                 enableV2Signing = true
                 enableV3Signing = true
             }
+            // Google Play へのアップロード用。Play 配信版は、預けたアプリの署名鍵（release）で Google が署名し直す
+            if (keystoreProperties.getProperty("uploadStoreFile") != null) {
+                create("upload") {
+                    storeFile = file(keystoreProperties.getProperty("uploadStoreFile"))
+                    storePassword = keystoreProperties.getProperty("uploadStorePassword")
+                    keyAlias = keystoreProperties.getProperty("uploadKeyAlias")
+                    keyPassword = keystoreProperties.getProperty("uploadKeyPassword")
+                }
+            }
         }
     }
 
@@ -64,7 +73,15 @@ android {
 
     buildTypes {
         release {
-            signingConfig = signingConfigs.findByName("release")
+            // 通常（GitHub で配る APK）はアプリの署名鍵で署名する。
+            // Google Play 用の AAB は -Pkalkron.upload を付けてビルドし、アップロード鍵で署名する:
+            //   ./gradlew bundleRelease -Pkalkron.upload
+            // 付け忘れると Play Console が「鍵が違う」と拒否するので、誤った鍵で配信されることはない
+            signingConfig = if (project.hasProperty("kalkron.upload")) {
+                signingConfigs.getByName("upload")
+            } else {
+                signingConfigs.findByName("release")
+            }
             // 難読化は無効のまま。端末で動作確認できない環境なので、
             // R8 による削除が原因の実行時エラーを避ける
             isMinifyEnabled = false
@@ -83,6 +100,8 @@ android {
     buildFeatures {
         // Jetpack Compose を有効化する
         compose = true
+        // 情報画面でバージョン（BuildConfig.VERSION_NAME）を表示するため
+        buildConfig = true
     }
 
     sourceSets {

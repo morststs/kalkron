@@ -16,6 +16,7 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -31,7 +32,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import click.e17.kalkron.R
 import click.e17.kalkron.ui.calculator.CalculatorScreen
+import click.e17.kalkron.ui.components.LocalOpenInfo
 import click.e17.kalkron.ui.history.HistoryScreen
+import click.e17.kalkron.ui.info.InfoScreen
 import click.e17.kalkron.ui.programmer.ProgrammerScreen
 import click.e17.kalkron.ui.scientific.ScientificScreen
 import click.e17.kalkron.ui.theme.CyanDeep
@@ -60,6 +63,10 @@ data object ProgrammerRoute
 
 @Serializable
 data object HistoryRoute
+
+/** 情報画面。下部ナビには並べず、ヘッダーの ⓘ から開く */
+@Serializable
+data object InfoRoute
 
 /** 下部ナビに並べる項目 */
 private data class NavItem(
@@ -145,15 +152,24 @@ fun CalculatorApp(
             }
         },
     ) { innerPadding ->
-        NavHost(
-            navController = navController,
-            startDestination = CalculatorRoute,
-            modifier = Modifier.padding(innerPadding),
-        ) {
-            composable<CalculatorRoute> { CalculatorScreen() }
-            composable<ScientificRoute> { ScientificScreen() }
-            composable<ProgrammerRoute> { ProgrammerScreen() }
-            composable<HistoryRoute> { HistoryScreen() }
+        // 各画面のヘッダーの ⓘ に、情報画面を開く処理を届ける（ModeHeader.kt の LocalOpenInfo を参照）
+        CompositionLocalProvider(LocalOpenInfo provides { navController.navigate(InfoRoute) { launchSingleTop = true } }) {
+            NavHost(
+                navController = navController,
+                startDestination = CalculatorRoute,
+                modifier = Modifier.padding(innerPadding),
+            ) {
+                composable<CalculatorRoute> { CalculatorScreen() }
+                composable<ScientificRoute> { ScientificScreen() }
+                composable<ProgrammerRoute> { ProgrammerScreen() }
+                composable<HistoryRoute> { HistoryScreen() }
+                composable<InfoRoute> {
+                    // 情報画面の中では ⓘ を出さない
+                    CompositionLocalProvider(LocalOpenInfo provides null) {
+                        InfoScreen(onBack = { navController.popBackStack() })
+                    }
+                }
+            }
         }
     }
 }

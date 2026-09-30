@@ -1,6 +1,16 @@
 package click.e17.kalkron.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.ui.unit.Dp
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material3.IconButton
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.res.stringResource
+import click.e17.kalkron.R
+import click.e17.kalkron.ui.theme.OnSurfaceMuted
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,11 +43,21 @@ import click.e17.kalkron.ui.theme.OnSurfaceBright
  * 代替フォントに落ちて字面が揃わないため、ここは英字表記にしている
  * （アプリ名の「電卓」はランチャーのラベルとして別に持っている）。
  */
+/**
+ * ヘッダーの ⓘ を押したときに情報画面を開く処理。
+ *
+ * ヘッダーは4つの画面の縦・横それぞれで使っているため、引数で渡すと全画面の関数を書き換えることになる。
+ * CompositionLocal を使うと、画面遷移を定義している CalculatorApp から、途中の画面を経由せずに直接届けられる。
+ * 渡されていない（null の）ときは ⓘ を出さない（プレビューや情報画面自身）。
+ */
+val LocalOpenInfo = staticCompositionLocalOf<(() -> Unit)?> { null }
+
 @Composable
 fun ModeHeader(
     mode: String,
     modifier: Modifier = Modifier,
 ) {
+    val openInfo = LocalOpenInfo.current
     Row(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -74,6 +94,22 @@ fun ModeHeader(
                 style = MaterialTheme.typography.labelSmall,
                 color = MetaText,
             )
+        }
+
+        if (openInfo != null) {
+            Spacer(modifier = Modifier.weight(1f))
+            // IconButton は既定で 48dp 四方を確保し、ヘッダーが高くなって PROG 画面などの下の表示を押し出す。
+            // ロゴタイル（30dp）に合わせて 32dp に収める
+            CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
+                IconButton(onClick = openInfo, modifier = Modifier.size(32.dp)) {
+                    Icon(
+                        imageVector = Icons.Outlined.Info,
+                        contentDescription = stringResource(R.string.info_open),
+                        tint = OnSurfaceMuted,
+                        modifier = Modifier.size(20.dp),
+                    )
+                }
+            }
         }
     }
 }
