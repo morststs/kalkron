@@ -53,15 +53,6 @@ android {
                 enableV2Signing = true
                 enableV3Signing = true
             }
-            // Google Play へのアップロード用。Play 配信版は、預けたアプリの署名鍵（release）で Google が署名し直す
-            if (keystoreProperties.getProperty("uploadStoreFile") != null) {
-                create("upload") {
-                    storeFile = file(keystoreProperties.getProperty("uploadStoreFile"))
-                    storePassword = keystoreProperties.getProperty("uploadStorePassword")
-                    keyAlias = keystoreProperties.getProperty("uploadKeyAlias")
-                    keyPassword = keystoreProperties.getProperty("uploadKeyPassword")
-                }
-            }
         }
     }
 
@@ -73,15 +64,9 @@ android {
 
     buildTypes {
         release {
-            // 通常（GitHub で配る APK）はアプリの署名鍵で署名する。
-            // Google Play 用の AAB は -Pkalkron.upload を付けてビルドし、アップロード鍵で署名する:
-            //   ./gradlew bundleRelease -Pkalkron.upload
-            // 付け忘れると Play Console が「鍵が違う」と拒否するので、誤った鍵で配信されることはない
-            signingConfig = if (project.hasProperty("kalkron.upload")) {
-                signingConfigs.getByName("upload")
-            } else {
-                signingConfigs.findByName("release")
-            }
+            // GitHub で配る APK はアプリの署名鍵で署名する。
+            // keystore.properties がない環境では署名なしの APK になる
+            signingConfig = signingConfigs.findByName("release")
             // 難読化は無効のまま。端末で動作確認できない環境なので、
             // R8 による削除が原因の実行時エラーを避ける
             isMinifyEnabled = false

@@ -185,7 +185,6 @@ private fun ProgrammerDisplay(
 /** 基数1行分。選ばれている基数はシアンで強調し、右端に印を付ける */
 @Composable
 private fun RadixRow(line: RadixLine, onClick: () -> Unit) {
-    val scroll = rememberScrollState()
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -199,19 +198,19 @@ private fun RadixRow(line: RadixLine, onClick: () -> Unit) {
             color = if (line.selected) ElectricCyan else MetaText,
             modifier = Modifier.width(36.dp),
         )
-        Box(modifier = Modifier.weight(1f).horizontalScroll(scroll)) {
-            Text(
-                text = line.text,
-                style = MaterialTheme.typography.labelMedium,
-                color = if (line.selected) OnSurfaceBright else OnSurfaceMuted,
-                maxLines = 1,
-                softWrap = false,
-            )
-        }
+        // 幅に合わせて行数と文字の大きさを決める（64ビットの BIN は上下2行になる）
+        RadixValue(
+            radix = line.radix,
+            text = line.text,
+            style = MaterialTheme.typography.labelMedium,
+            color = if (line.selected) OnSurfaceBright else OnSurfaceMuted,
+            modifier = Modifier.weight(1f),
+        )
         Text(
             text = if (line.selected) "●" else "○",
             style = MaterialTheme.typography.labelSmall,
             color = if (line.selected) ElectricCyan else MetaText,
+            modifier = Modifier.padding(start = 8.dp),
         )
     }
 }
